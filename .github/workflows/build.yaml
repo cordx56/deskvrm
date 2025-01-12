@@ -9,6 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - run: |
           rustup toolchain install --profile=minimal stable 
           rustup toolchain add aarch64-apple-darwin
@@ -23,6 +25,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - shell: pwsh
         run: |
           rustup toolchain install --profile=minimal stable 
