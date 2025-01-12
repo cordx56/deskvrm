@@ -1,0 +1,52 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-for-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - run: |
+          rustup toolchain install --profile=minimal stable 
+          rustup toolchain add aarch64-apple-darwin
+      - run: pnpm install
+      - run: pnpm tauri build --bundles dmg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deskvrm-release-dmg
+          path: src-tauri/target/aarch64-apple-darwin/release/bundle/**/*.dmg
+  build-for-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - shell: pwsh
+        run: |
+          rustup toolchain install --profile=minimal stable 
+          rustup toolchain add x86_64-pc-windows-msvc
+      - shell: pwsh
+        run: pnpm install
+      - shell: pwsh
+        run: pnpm tauri build --bundles msi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deskvrm-release-msi
+          path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/**/*.msi
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - build-for-macos
+      - build-for-windows
+    steps:
+      - uses: actions/download-artifact@v4
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: auto deskvrm release
+          draft: true
+          files: |
+            ./**/*.dmg
+            ./**/*.msi
