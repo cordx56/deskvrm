@@ -13,7 +13,7 @@ jobs:
           version: 9
       - run: |
           rustup toolchain install --profile=minimal stable 
-          rustup toolchain add aarch64-apple-darwin
+          rustup target add aarch64-apple-darwin
       - run: pnpm install
       - run: pnpm tauri build --bundles dmg
       - uses: actions/upload-artifact@v4
@@ -30,7 +30,7 @@ jobs:
       - shell: pwsh
         run: |
           rustup toolchain install --profile=minimal stable 
-          rustup toolchain add x86_64-pc-windows-msvc
+          rustup target add x86_64-pc-windows-msvc
       - shell: pwsh
         run: pnpm install
       - shell: pwsh
