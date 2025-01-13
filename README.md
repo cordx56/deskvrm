@@ -4,6 +4,7 @@
 Windows、macOSに対応。
 
 ダウンロードは[リリースページ](https://github.com/cordx56/deskvrm/releases)よりどうぞ。
+Windowsは `.msi` 、macOSは `dmg` が使えます。
 
 ## 実装状況
 
