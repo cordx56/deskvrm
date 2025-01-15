@@ -6,6 +6,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls";
 import { VRM, VRMLoaderPlugin, VRMHumanBoneName } from "@pixiv/three-vrm";
 import { MutableRefObject } from "react";
 
+import { appWindow, currentMonitor, LogicalSize } from "@tauri-apps/api/window";
+
 export const loadModel = <T extends Function>(
   render: HTMLDivElement,
   model: ArrayBuffer,
@@ -18,12 +20,13 @@ export const loadModel = <T extends Function>(
     antialias: true,
     alpha: true,
   });
-  renderer.setPixelRatio(window.devicePixelRatio * 2);
+  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(render.clientWidth, render.clientHeight);
   renderer.setClearAlpha(0);
   renderer.shadowMap.enabled = true;
   const elem = renderer.domElement;
   elem.dataset.tauriDragRegion = "1";
+
   render.appendChild(elem);
 
   const camera = new Three.PerspectiveCamera(
@@ -38,6 +41,16 @@ export const loadModel = <T extends Function>(
   controls.screenSpacePanning = true;
   controls.target.set(0.0, 0.6, 0.0);
   controls.update();
+
+  let fixedCameraZ: number | undefined;
+
+  let mouseWheel = 0;
+  elem.addEventListener("wheel", (e) => {
+    mouseWheel -= e.deltaY / 10;
+    if (fixedCameraZ) {
+      camera.position.z = fixedCameraZ;
+    }
+  });
 
   const light = new Three.DirectionalLight(0xffffff, lightP);
   light.position.set(0.0, 0.6, -1).normalize();
@@ -67,6 +80,7 @@ export const loadModel = <T extends Function>(
         vrm.humanoid
           .getRawBoneNode(VRMHumanBoneName.RightUpperArm)
           ?.rotateZ(Math.PI / -2.6);
+
         vrm.scene.traverse((object: any) => {
           object.castShadow = true;
         });
@@ -94,11 +108,32 @@ export const loadModel = <T extends Function>(
   scene.add(back);
   */
 
-  const update = () => {
+  const update = async () => {
     requestAnimationFrame(update);
+
+    if (vrm) {
+      const vrmBounding = new Three.Box3().setFromObject(vrm.scene);
+      const vFOV = (camera.fov * Math.PI) / 180;
+      const tan = Math.tan(vFOV / 2);
+      fixedCameraZ = (vrmBounding.max.y - vrmBounding.min.y + 0.1) / -2 / tan;
+
+      const aspect =
+        (vrmBounding.max.x - vrmBounding.min.x) /
+        (vrmBounding.max.y - vrmBounding.min.y);
+      const width = (500 + mouseWheel) * aspect;
+      const height = 500 + mouseWheel;
+      appWindow.setSize(new LogicalSize(width, height));
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      camera.aspect = aspect;
+      camera.updateProjectionMatrix();
+    }
+
+    //camera.position.z = Math.max((-1 * width) / 2 / tan, -2.8);
     if (onUpdate.current) {
       onUpdate.current(vrm);
     }
+
     renderer.render(scene, camera);
   };
   update();

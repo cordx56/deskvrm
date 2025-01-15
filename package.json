@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "fmt": "prettier -w src/**/*"
   },
   "dependencies": {
     "@pixiv/three-vrm": "^3.3.2",

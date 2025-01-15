@@ -21,7 +21,7 @@ function App() {
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
 
-  const onUpdateRef = useRef((_vrm: VRM | null) => { });
+  const onUpdateRef = useRef((_vrm: VRM | null) => {});
   useEffect(() => {
     onUpdateRef.current = async (vrm: VRM | null) => {
       if (vrm) {
@@ -31,7 +31,7 @@ function App() {
           const rotationY = Math.max(
             Math.min(
               ((Math.PI / 4) * (mouseX - windowPosition.x)) /
-              (monitor.position.x + monitor.size.width),
+                (monitor.position.x + monitor.size.width),
               Math.PI / 4,
             ),
             Math.PI / -4,
@@ -39,7 +39,7 @@ function App() {
           const rotationX = Math.max(
             Math.min(
               ((Math.PI / 4) * (windowPosition.y - mouseY)) /
-              (monitor.position.y + monitor.size.height),
+                (monitor.position.y + monitor.size.height),
               Math.PI / 4,
             ),
             Math.PI / -4,
