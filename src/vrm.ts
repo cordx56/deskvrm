@@ -6,7 +6,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls";
 import { VRM, VRMLoaderPlugin, VRMHumanBoneName } from "@pixiv/three-vrm";
 import { MutableRefObject } from "react";
 
-import { appWindow, currentMonitor, LogicalSize } from "@tauri-apps/api/window";
+import { appWindow, LogicalSize } from "@tauri-apps/api/window";
 
 export const loadModel = <T extends Function>(
   render: HTMLDivElement,
@@ -55,11 +55,10 @@ export const loadModel = <T extends Function>(
   const light = new Three.DirectionalLight(0xffffff, lightP);
   light.position.set(0.0, 0.6, -1).normalize();
   light.castShadow = true;
+  light.shadow.mapSize.width = 2048;
+  light.shadow.mapSize.height = 2048;
+  light.shadow.radius = 5;
   scene.add(light);
-  const subLight = new Three.DirectionalLight(0xffffff, lightP);
-  subLight.position.set(-2.0, 0.6, 1.0).normalize();
-  subLight.castShadow = true;
-  scene.add(subLight);
 
   let vrm: VRM | null = null;
 
@@ -80,8 +79,7 @@ export const loadModel = <T extends Function>(
         vrm.humanoid
           .getRawBoneNode(VRMHumanBoneName.RightUpperArm)
           ?.rotateZ(Math.PI / -2.6);
-
-        vrm.scene.traverse((object: any) => {
+        vrm.scene.traverse((object) => {
           object.castShadow = true;
         });
         scene.add(vrm.scene);
@@ -95,18 +93,12 @@ export const loadModel = <T extends Function>(
     },
   );
 
-  /*
   const back = new Three.Mesh(
-    new Three.PlaneGeometry(16, 16, 1, 1),
-    new Three.MeshStandardMaterial({
-      color: 0xffffff,
-    }),
+    new Three.BoxGeometry(100, 100, 1),
+    new Three.ShadowMaterial({ opacity: 0.5 }),
   );
-  back.position.set(-4, -4, -4);
-  back.rotation.set(0, 0, 0);
   back.receiveShadow = true;
   scene.add(back);
-  */
 
   const update = async () => {
     requestAnimationFrame(update);
@@ -116,6 +108,25 @@ export const loadModel = <T extends Function>(
       const vFOV = (camera.fov * Math.PI) / 180;
       const tan = Math.tan(vFOV / 2);
       fixedCameraZ = (vrmBounding.max.y - vrmBounding.min.y + 0.1) / -2 / tan;
+
+      // shadow
+      light.position
+        .set(camera.position.x, camera.position.y, camera.position.z - 1)
+        .normalize();
+      light.rotation.x = camera.rotation.x;
+      light.rotation.y = camera.rotation.y;
+      light.rotation.z = camera.rotation.z;
+      const vec = [
+        -camera.position.x / 2,
+        (0.6 - camera.position.y) / 2,
+        (1 - camera.position.z) / 2,
+      ];
+      back.position.x = vec[0];
+      back.position.y = vec[1];
+      back.position.z = vec[2];
+      back.rotation.x = camera.rotation.x; // + Math.PI / 2;
+      back.rotation.y = camera.rotation.y; // + Math.PI / 2;
+      back.rotation.z = camera.rotation.z; // + Math.PI / 2;
 
       const aspect =
         (vrmBounding.max.x - vrmBounding.min.x) /

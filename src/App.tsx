@@ -16,7 +16,7 @@ function App() {
   const render = useRef<HTMLDivElement>(null);
   const fileSelect = useRef<HTMLDivElement>(null);
   const [clickCount, setClickCount] = useState(0);
-  const [light, setLight] = useState(2);
+  const [light, setLight] = useState(3);
 
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
