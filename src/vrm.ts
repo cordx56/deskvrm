@@ -4,9 +4,14 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader";
 // @ts-ignore
 import { OrbitControls } from "three/addons/controls/OrbitControls";
 import { VRM, VRMLoaderPlugin, VRMHumanBoneName } from "@pixiv/three-vrm";
+import {
+  VRMAnimationLoaderPlugin,
+  createVRMAnimationClip,
+} from "@pixiv/three-vrm-animation";
 import { MutableRefObject } from "react";
 
 import { appWindow, LogicalSize } from "@tauri-apps/api/window";
+import { emit } from "@tauri-apps/api/event";
 
 export const loadModel = <T extends Function>(
   render: HTMLDivElement,
@@ -35,36 +40,29 @@ export const loadModel = <T extends Function>(
     0.1,
     20.0,
   );
-  camera.position.set(0.0, 0.6, -2.8);
+  camera.position.set(0.0, 0.0, -2.8);
   camera.rotation.set(0, Math.PI, 0);
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.screenSpacePanning = true;
-  controls.target.set(0.0, 0.6, 0.0);
-  controls.update();
-
-  let fixedCameraZ: number | undefined;
-
-  let mouseWheel = 0;
-  elem.addEventListener("wheel", (e) => {
-    mouseWheel -= e.deltaY / 10;
-    if (fixedCameraZ) {
-      camera.position.z = fixedCameraZ;
-    }
-  });
 
   const light = new Three.DirectionalLight(0xffffff, lightP);
-  light.position.set(0.0, 0.6, -1).normalize();
-  light.castShadow = true;
-  light.shadow.mapSize.width = 2048;
-  light.shadow.mapSize.height = 2048;
-  light.shadow.radius = 5;
+  light.position.set(0.0, 0.0, -1).normalize();
   scene.add(light);
+  const shadowLight = new Three.DirectionalLight(0xffffff, 1);
+  shadowLight.position.set(-0.5, -3.0, -10.0).normalize();
+  shadowLight.castShadow = true;
+  shadowLight.shadow.mapSize.width = 2048;
+  shadowLight.shadow.mapSize.height = 2048;
+  //shadowLight.shadow.radius = 5;
+  scene.add(shadowLight);
 
   let vrm: VRM | null = null;
+  let mixer: Three.AnimationMixer | null = null;
 
   const loader = new GLTFLoader();
   loader.register((parser: any) => {
     return new VRMLoaderPlugin(parser);
+  });
+  loader.register((parser: any) => {
+    return new VRMAnimationLoaderPlugin(parser);
   });
   loader.parse(
     model,
@@ -73,6 +71,8 @@ export const loadModel = <T extends Function>(
       vrm = gltf.userData.vrm;
 
       if (vrm) {
+        scene.add(vrm.scene);
+
         vrm.humanoid
           .getRawBoneNode(VRMHumanBoneName.LeftUpperArm)
           ?.rotateZ(Math.PI / 2.6);
@@ -82,7 +82,22 @@ export const loadModel = <T extends Function>(
         vrm.scene.traverse((object) => {
           object.castShadow = true;
         });
-        scene.add(vrm.scene);
+
+        /*
+        loader.load("/ashi_batabata.vrma", (gltf: any) => {
+          if (vrm) {
+            const vrmAnimations = gltf.userData.vrmAnimations;
+            if (vrmAnimations == null) {
+              return;
+            }
+            animation = vrmAnimations[0] ?? null;
+            // animation
+            //mixer = new Three.AnimationMixer(vrm.scene);
+            //const clip = createVRMAnimationClip(animation, vrm);
+            //mixer.clipAction(clip).play();
+          }
+        });
+        */
       }
     },
     (progress: any) => {
@@ -97,36 +112,78 @@ export const loadModel = <T extends Function>(
     new Three.BoxGeometry(100, 100, 1),
     new Three.ShadowMaterial({ opacity: 0.5 }),
   );
+  back.position.set(0, 0, 2);
   back.receiveShadow = true;
   scene.add(back);
+
+  const clock = new Three.Clock();
+  clock.start();
+
+  // mouse events
+  let mouseWheel = 0;
+  elem.addEventListener("wheel", (e) => {
+    mouseWheel -= e.deltaY / 10;
+  });
+  let mouseDownTime = 0;
+  let mouseDownCount = 0;
+  elem.addEventListener("mousedown", () => {
+    mouseDownTime = new Date().getTime();
+    mouseDownCount += 1;
+  });
+  elem.addEventListener("mouseleave", () => {
+    emit("cursor_grab", { grab: false });
+  });
+  elem.addEventListener("mouseup", () => {
+    emit("cursor_grab", { grab: false });
+    if (new Date().getTime() - mouseDownTime < 500) {
+      if (mouseDownCount === 2) {
+        // show menu
+      }
+    } else {
+      mouseDownCount = 0;
+    }
+  });
+  elem.addEventListener("mousemove", (e) => {
+    if (mouseDownCount === 2) {
+      if (vrm) {
+        emit("cursor_grab", { grab: true });
+        vrm.scene.rotation.x -= e.movementY / 100 / Math.PI / 2;
+        vrm.scene.rotation.y += e.movementX / 100 / Math.PI / 2;
+      }
+    }
+  });
 
   const update = async () => {
     requestAnimationFrame(update);
 
+    const delta = clock.getDelta();
+    if (mixer) {
+      // animation
+      //mixer.update(delta);
+    }
     if (vrm) {
+      //vrm.update(delta);
+    }
+
+    if (vrm) {
+      vrm.scene.position.x = 0;
+      vrm.scene.position.y = 0;
+      vrm.scene.position.z = 0;
+      const currentBounding = new Three.Box3().setFromObject(vrm.scene);
+      vrm.scene.position.x =
+        (currentBounding.max.x + currentBounding.min.x) / -2;
+      vrm.scene.position.y =
+        (currentBounding.max.y + currentBounding.min.y) / -2;
+      vrm.scene.position.z =
+        (currentBounding.max.z + currentBounding.min.z) / -2;
       const vrmBounding = new Three.Box3().setFromObject(vrm.scene);
+
+      back.position.z = vrmBounding.max.z + 1;
+
       const vFOV = (camera.fov * Math.PI) / 180;
       const tan = Math.tan(vFOV / 2);
-      fixedCameraZ = (vrmBounding.max.y - vrmBounding.min.y + 0.1) / -2 / tan;
-
-      // shadow
-      light.position
-        .set(camera.position.x, camera.position.y, camera.position.z - 1)
-        .normalize();
-      light.rotation.x = camera.rotation.x;
-      light.rotation.y = camera.rotation.y;
-      light.rotation.z = camera.rotation.z;
-      const vec = [
-        -camera.position.x / 2,
-        (0.6 - camera.position.y) / 2,
-        (1 - camera.position.z) / 2,
-      ];
-      back.position.x = vec[0];
-      back.position.y = vec[1];
-      back.position.z = vec[2];
-      back.rotation.x = camera.rotation.x; // + Math.PI / 2;
-      back.rotation.y = camera.rotation.y; // + Math.PI / 2;
-      back.rotation.z = camera.rotation.z; // + Math.PI / 2;
+      camera.position.z =
+        (vrmBounding.max.y - vrmBounding.min.y + 0.1) / -2 / tan;
 
       const aspect =
         (vrmBounding.max.x - vrmBounding.min.x) /
@@ -140,7 +197,6 @@ export const loadModel = <T extends Function>(
       camera.updateProjectionMatrix();
     }
 
-    //camera.position.z = Math.max((-1 * width) / 2 / tan, -2.8);
     if (onUpdate.current) {
       onUpdate.current(vrm);
     }

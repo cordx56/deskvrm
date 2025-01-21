@@ -11,6 +11,9 @@ importers:
       '@pixiv/three-vrm':
         specifier: ^3.3.2
         version: 3.3.2(three@0.172.0)
+      '@pixiv/three-vrm-animation':
+        specifier: ^3.3.3
+        version: 3.3.3(three@0.172.0)
       '@tauri-apps/api':
         specifier: ^1.6.0
         version: 1.6.0
@@ -386,8 +389,18 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
+  '@pixiv/three-vrm-animation@3.3.3':
+    resolution: {integrity: sha512-epIqsoRf2Rc1hCwuVWTk5HZc2elr58gZSNFNb4SVKzQ1ntxd+DDeFJ3ktjXE3K2aWjXmVe6AyeDLBGKCGfmcpw==}
+    peerDependencies:
+      three: '>=0.137'
+
   '@pixiv/three-vrm-core@3.3.2':
     resolution: {integrity: sha512-vDxRVVPzxXjTIl/XrWQZff+3rwNZ+P1F//njLhQslj83aZ9xu8QVsGpBs6u00infeGXzX1f98S3ibY/Gjpj3Sg==}
+    peerDependencies:
+      three: '>=0.137'
+
+  '@pixiv/three-vrm-core@3.3.3':
+    resolution: {integrity: sha512-5I5Q0DhdnBAg6W0jBFAIn7NBQ7XIpmylZ6GcX3oGUhiYw44mTxfONIHTl6C7XedESJ8lpKGy0jZZIA7QMWE2Lg==}
     peerDependencies:
       three: '>=0.137'
 
@@ -424,6 +437,9 @@ packages:
   '@pixiv/types-vrm-0.0@3.3.2':
     resolution: {integrity: sha512-PXvYXGxP3n8TTOLCYiblLCsWc9AWUWiy5V8AeEm5ADDD5yaMa02Z8zw5/eoHDSPl/Byf/OpNLgeO1wReLE31iw==}
 
+  '@pixiv/types-vrm-0.0@3.3.3':
+    resolution: {integrity: sha512-+nqVpgwwwDsy2UiQd+r6vaziqvpzWwYVGw04ry2yKJ5RjRC36t+KQ8YhLLgSr9xDG5wC/JJk/r19Q3bBKeGJKA==}
+
   '@pixiv/types-vrmc-materials-hdr-emissive-multiplier-1.0@3.3.2':
     resolution: {integrity: sha512-PLmNZ2ae91Va+Ye8dvfpJl2MBI7WRVlwNpHebJKgXUbg9qppWdNO8CHNIk5WF1XhQMIFuwbnB/ys496LutHQTA==}
 
@@ -439,8 +455,17 @@ packages:
   '@pixiv/types-vrmc-springbone-extended-collider-1.0@3.3.2':
     resolution: {integrity: sha512-6pVCndF+09s14PKmqoRpA01rYjpWh/clnP6Q/d6q2IUPDtjrxor4m696eN8yU7qNJmqkCdrLODOoFxBftcCEKQ==}
 
+  '@pixiv/types-vrmc-vrm-1.0@2.0.3':
+    resolution: {integrity: sha512-RMP34Bk1qLFQv/CRB1Zqvn2qMFfWQfP2Hms5QrrfoBsW9XroZdEe0zPLNbGmUPYh4F7VtBb+B7+RCuymRtpehA==}
+
   '@pixiv/types-vrmc-vrm-1.0@3.3.2':
     resolution: {integrity: sha512-FGvu2a6txJ9W/S8yIujFY9a8YMgKmSfIxHPnXj2aNFCaPhdnLb7LkG5b1bkxITUE5oHseLhSnEBv0Ni3nCKbzw==}
+
+  '@pixiv/types-vrmc-vrm-1.0@3.3.3':
+    resolution: {integrity: sha512-/EqTI0MakfG4J2tMHLHS0lYmH3NjjyV2mFTEEbb9qkCO1yM31bsmwUSE3lY/BWuN3+r03+YQJQbIErj+sLxXDQ==}
+
+  '@pixiv/types-vrmc-vrm-animation-1.0@3.3.3':
+    resolution: {integrity: sha512-6R8pgWLEyqXHNgrun/RJo+fdKO2w5gURpRTClQK8C5Iqh1FUYil6lC/EkMU+w06t5aFEx6JX1f/OEqBiih8vZQ==}
 
   '@rollup/rollup-android-arm-eabi@4.30.1':
     resolution: {integrity: sha512-pSWY+EVt3rJ9fQ3IqlrEUtXh3cGqGtPDH1FQlNZehO2yYxCHEX1SPsz1M//NXwYfbTlcKr9WObLnJX9FsS9K1Q==}
@@ -1515,10 +1540,23 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.18.0
 
+  '@pixiv/three-vrm-animation@3.3.3(three@0.172.0)':
+    dependencies:
+      '@pixiv/three-vrm-core': 3.3.3(three@0.172.0)
+      '@pixiv/types-vrmc-vrm-1.0': 3.3.3
+      '@pixiv/types-vrmc-vrm-animation-1.0': 3.3.3
+      three: 0.172.0
+
   '@pixiv/three-vrm-core@3.3.2(three@0.172.0)':
     dependencies:
       '@pixiv/types-vrm-0.0': 3.3.2
       '@pixiv/types-vrmc-vrm-1.0': 3.3.2
+      three: 0.172.0
+
+  '@pixiv/three-vrm-core@3.3.3(three@0.172.0)':
+    dependencies:
+      '@pixiv/types-vrm-0.0': 3.3.3
+      '@pixiv/types-vrmc-vrm-1.0': 3.3.3
       three: 0.172.0
 
   '@pixiv/three-vrm-materials-hdr-emissive-multiplier@3.3.2(three@0.172.0)':
@@ -1562,6 +1600,8 @@ snapshots:
 
   '@pixiv/types-vrm-0.0@3.3.2': {}
 
+  '@pixiv/types-vrm-0.0@3.3.3': {}
+
   '@pixiv/types-vrmc-materials-hdr-emissive-multiplier-1.0@3.3.2': {}
 
   '@pixiv/types-vrmc-materials-mtoon-1.0@3.3.2': {}
@@ -1572,7 +1612,15 @@ snapshots:
 
   '@pixiv/types-vrmc-springbone-extended-collider-1.0@3.3.2': {}
 
+  '@pixiv/types-vrmc-vrm-1.0@2.0.3': {}
+
   '@pixiv/types-vrmc-vrm-1.0@3.3.2': {}
+
+  '@pixiv/types-vrmc-vrm-1.0@3.3.3': {}
+
+  '@pixiv/types-vrmc-vrm-animation-1.0@3.3.3':
+    dependencies:
+      '@pixiv/types-vrmc-vrm-1.0': 2.0.3
 
   '@rollup/rollup-android-arm-eabi@4.30.1':
     optional: true

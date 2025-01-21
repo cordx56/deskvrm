@@ -9,6 +9,10 @@ struct MousePosition {
     x: i32,
     y: i32,
 }
+#[derive(serde::Deserialize, Clone)]
+struct CursorGrab {
+    grab: bool,
+}
 
 fn main() {
     tauri::Builder::default()
@@ -16,6 +20,15 @@ fn main() {
             let window = app.get_window("main").unwrap();
             #[cfg(any(windows, target_os = "macos"))]
             set_shadow(&window, false).unwrap();
+
+            let win = window.clone();
+            app.listen_global("cursor_grab", move |ev| {
+                if let Some(payload) = ev.payload() {
+                    if let Ok(data) = serde_json::from_str::<CursorGrab>(payload) {
+                        let _ = win.set_cursor_grab(data.grab);
+                    }
+                }
+            });
 
             let app_handle = app.app_handle();
             tauri::async_runtime::spawn(async move {
