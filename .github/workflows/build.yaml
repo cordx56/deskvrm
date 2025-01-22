@@ -11,6 +11,16 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: mozilla-actions/sccache-action@v0.0.7
+      - uses: actions/checkout@v4
+        with:
+          repository: cordx56/secret-dotfiles
+          path: secret-dotfiles
+      - run: |
+          cat secret-dotfiles/env/sccache >> $GITHUB_ENV
+          echo RUSTC_WRAPPER=sccache >> $GITHUB_ENV
+
       - uses: pnpm/action-setup@v4
         with:
           version: 9
@@ -27,6 +37,16 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: mozilla-actions/sccache-action@v0.0.7
+      - uses: actions/checkout@v4
+        with:
+          repository: cordx56/secret-dotfiles
+          path: secret-dotfiles
+      - run: |
+          cat secret-dotfiles/env/sccache >> $GITHUB_ENV
+          echo RUSTC_WRAPPER=sccache >> $GITHUB_ENV
+
       - uses: pnpm/action-setup@v4
         with:
           version: 9
