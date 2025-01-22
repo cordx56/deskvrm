@@ -1,3 +1,12 @@
+export const listModel = async (): Promise<string[]> => {
+  const resp = await fetch(new URL(`http://localhost:8108/vrm`));
+  if (resp.ok) {
+    return (await resp.json()).models;
+  } else {
+    return [];
+  }
+};
+
 export const readModel = async (name: string): Promise<Uint8Array | null> => {
   const resp = await fetch(new URL(`http://localhost:8108/vrm/${name}`));
   if (resp.ok) {

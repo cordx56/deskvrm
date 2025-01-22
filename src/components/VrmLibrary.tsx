@@ -1,7 +1,5 @@
 import { useState, useEffect, ChangeEventHandler } from "react";
-import { readDir, createDir, exists } from "@tauri-apps/api/fs";
-import { vrmDir } from "@/util/path";
-import { writeModel } from "@/util/fetch";
+import { listModel, writeModel } from "@/util/fetch";
 
 type Props = {
   onSelect: (path: string) => any;
@@ -11,14 +9,8 @@ export default ({ onSelect }: Props) => {
   const [models, setModels] = useState<string[]>([]);
   const [processing, setProcessing] = useState(false);
   const readModels = async () => {
-    if (!(await exists(vrmDir))) {
-      await createDir(vrmDir, { recursive: true });
-    }
-    const read = await readDir(vrmDir);
-    const vrmFiles = read
-      .filter((p) => p.path.endsWith(".vrm") && typeof p.name === "string")
-      .map((p) => p.name!);
-    setModels(vrmFiles);
+    const models = await listModel();
+    setModels(models);
   };
   useEffect(() => {
     readModels();
