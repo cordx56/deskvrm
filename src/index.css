@@ -1,5 +1,14 @@
-:root {
-  background-color: rgba(0, 0, 0, 0);
-  overflow: hidden;
-  border: none;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  @apply w-full h-full;
+}
+#root {
+  @apply w-full h-full;
+}
+
+* {
+  @apply box-border;
 }

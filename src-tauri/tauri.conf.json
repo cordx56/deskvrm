@@ -8,11 +8,18 @@
   },
   "package": {
     "productName": "deskvrm",
-    "version": "0.0.2"
+    "version": "0.0.3"
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "all": true,
+      "fs": {
+        "all": true,
+        "scope": ["$APPLOCALDATA/**/*"]
+      },
+      "dialog": {
+        "message": true
+      }
     },
     "bundle": {
       "active": true,
@@ -55,13 +62,12 @@
     },
     "windows": [
       {
+        "label": "config",
         "fullscreen": false,
-        "width": 300,
+        "width": 500,
         "height": 500,
-        "resizable": false,
-        "title": "deskvrm",
-        "transparent": true,
-        "decorations": false,
+        "resizable": true,
+        "title": "deskvrm config",
         "alwaysOnTop": true
       }
     ],

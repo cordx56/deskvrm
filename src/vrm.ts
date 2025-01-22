@@ -4,10 +4,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader";
 // @ts-ignore
 import { OrbitControls } from "three/addons/controls/OrbitControls";
 import { VRM, VRMLoaderPlugin, VRMHumanBoneName } from "@pixiv/three-vrm";
-import {
-  VRMAnimationLoaderPlugin,
-  createVRMAnimationClip,
-} from "@pixiv/three-vrm-animation";
+import { VRMAnimationLoaderPlugin } from "@pixiv/three-vrm-animation";
 import { MutableRefObject } from "react";
 
 import { appWindow, LogicalSize } from "@tauri-apps/api/window";
@@ -32,6 +29,9 @@ export const loadModel = <T extends Function>(
   const elem = renderer.domElement;
   elem.dataset.tauriDragRegion = "1";
 
+  if (render.hasChildNodes()) {
+    return;
+  }
   render.appendChild(elem);
 
   const camera = new Three.PerspectiveCamera(
@@ -156,7 +156,7 @@ export const loadModel = <T extends Function>(
   const update = async () => {
     requestAnimationFrame(update);
 
-    const delta = clock.getDelta();
+    //const delta = clock.getDelta();
     if (mixer) {
       // animation
       //mixer.update(delta);

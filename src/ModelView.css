@@ -1,0 +1,38 @@
+.render {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  border: none;
+}
+
+.white {
+  color: #fff;
+}
+
+/*
+.file {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: #fff;
+}
+.file .file-selector {
+  position: relative;
+  padding: 2em 1em;
+}
+.file input::file-selector-button {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+*/
+
+canvas {
+  border: none;
+}

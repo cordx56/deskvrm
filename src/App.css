@@ -1,36 +1,31 @@
-.render {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  border: none;
+.color {
+  @apply bg-white dark:bg-neutral-900 text-black dark:text-neutral-300;
 }
 
-.white {
-  color: #fff;
+.ui {
+  @apply p-4 w-full h-full overflow-hidden border-0 color;
 }
 
-.file {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  background-color: #fff;
+.ui button {
+  @apply my-1 px-4 py-1 border border-sky-500 bg-transparent hover:bg-sky-500/50 rounded-lg transition-all;
 }
-.file .file-selector {
-  position: relative;
-  padding: 2em 1em;
+.ui input {
+  @apply my-1 px-4 py-1 border border-sky-500 bg-transparent hover:bg-sky-500/50 rounded-lg transition-all;
 }
-.file input::file-selector-button {
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
+.ui input[type="file"] {
+  @apply px-2 py-0;
+}
+.ui ::file-selector-button {
+  @apply pr-3 py-1 color bg-transparent border-y-0 border-l-0 border-r border-sky-500;
 }
 
-canvas {
-  border: none;
+.ui a {
+  @apply text-sky-500 cursor-pointer;
+}
+.ui p {
+  @apply my-3;
+}
+
+.ui h3 {
+  @apply my-1 text-xl;
 }
