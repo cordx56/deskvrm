@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "tauri": "tauri",
-    "fmt": "prettier -w src/**/*"
+    "fmt": "prettier -w src/**/* src/*"
   },
   "dependencies": {
     "@pixiv/three-vrm": "^3.3.2",

@@ -23,7 +23,7 @@ struct ModelList {
 }
 
 fn main() {
-    //simple_logger::init_with_env().unwrap();
+    simple_logger::init_with_env().unwrap();
     tauri::Builder::default()
         .setup(|app| {
             let app_handle = app.app_handle();
@@ -50,7 +50,6 @@ fn main() {
                             )
                             .title("deskvrm")
                             .inner_size(300.0, 500.0)
-                            .fullscreen(false)
                             .resizable(false)
                             .decorations(false)
                             .transparent(true)

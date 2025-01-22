@@ -53,7 +53,7 @@ function App() {
     e.preventDefault();
     setTimeout(() => {
       setClickCount(0);
-    }, 400);
+    }, 600);
     setClickCount((prev) => prev + 1);
     if (clickCount === 2) {
       const configWindow = getAll().find((v) => v.label === "config");
