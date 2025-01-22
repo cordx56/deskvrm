@@ -17,6 +17,7 @@ jobs:
         with:
           repository: cordx56/secret-dotfiles
           path: secret-dotfiles
+          token: ${{ secrets.PAT }}
       - run: |
           cat secret-dotfiles/env/sccache >> $GITHUB_ENV
           echo RUSTC_WRAPPER=sccache >> $GITHUB_ENV
@@ -43,6 +44,7 @@ jobs:
         with:
           repository: cordx56/secret-dotfiles
           path: secret-dotfiles
+          token: ${{ secrets.PAT }}
       - run: |
           cat secret-dotfiles/env/sccache >> $GITHUB_ENV
           echo RUSTC_WRAPPER=sccache >> $GITHUB_ENV
