@@ -27,7 +27,6 @@ export const loadModel = <T extends Function>(
   renderer.setClearAlpha(0);
   renderer.shadowMap.enabled = true;
   const elem = renderer.domElement;
-  elem.dataset.tauriDragRegion = "1";
 
   if (render.hasChildNodes()) {
     return;

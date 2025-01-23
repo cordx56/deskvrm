@@ -1,7 +1,12 @@
 import { useRef, useState, useEffect, MouseEventHandler } from "react";
 import { useParams } from "react-router-dom";
 import { listen } from "@tauri-apps/api/event";
-import { appWindow, currentMonitor, getAll } from "@tauri-apps/api/window";
+import {
+  appWindow,
+  currentMonitor,
+  getAll,
+  LogicalPosition,
+} from "@tauri-apps/api/window";
 import { VRM, VRMHumanBoneName } from "@pixiv/three-vrm";
 import "@/ModelView.css";
 import { loadModel } from "./vrm";
@@ -15,6 +20,9 @@ function App() {
 
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
+  const [moveOffset, setMoveOffset] = useState<{ x: number; y: number } | null>(
+    null,
+  );
 
   const onUpdateRef = useRef((_vrm: VRM | null) => {});
   useEffect(() => {
@@ -47,20 +55,34 @@ function App() {
         }
       }
     };
+
+    if (moveOffset) {
+      appWindow.setPosition(
+        new LogicalPosition(mouseX - moveOffset.x, mouseY - moveOffset.y),
+      );
+    }
   }, [mouseX, mouseY]);
 
   const onClick: MouseEventHandler = async (e) => {
     e.preventDefault();
-    setTimeout(() => {
-      setClickCount(0);
-    }, 600);
-    setClickCount((prev) => prev + 1);
     if (clickCount === 2) {
       const configWindow = getAll().find((v) => v.label === "config");
       if (configWindow) {
         await configWindow.show();
         await appWindow.close();
       }
+    }
+  };
+  const onMouseDown: MouseEventHandler = async () => {
+    setTimeout(() => {
+      setClickCount(0);
+    }, 600);
+    setClickCount((prev) => prev + 1);
+    const pos = (await appWindow.outerPosition()).toLogical(
+      await appWindow.scaleFactor(),
+    );
+    if (clickCount == 0) {
+      setMoveOffset({ x: mouseX - pos.x, y: mouseY - pos.y });
     }
   };
 
@@ -86,8 +108,11 @@ function App() {
       <div
         ref={render}
         onClick={onClick}
+        onMouseDown={onMouseDown}
+        onMouseUp={() => {
+          setMoveOffset(null);
+        }}
         className="render"
-        data-tauri-drag-region={true}
       ></div>
     </>
   );
